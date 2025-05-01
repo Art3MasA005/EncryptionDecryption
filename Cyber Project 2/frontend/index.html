@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encryption and Decryption</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            width: 80%;
+            max-width: 800px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section input, .section textarea, .section select, .section button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        .section textarea {
+            height: 100px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Encryption and Decryption</h2>
+    
+    <div class="section" id="encryption-section">
+        <h3>Encryption</h3>
+        <select id="enc-method">
+            <option value="AES">AES</option>
+            <option value="RSA">RSA</option>
+        </select>
+        <input type="text" id="plain-text" placeholder="Enter text to encrypt">
+        <button onclick="encryptText()">Encrypt</button>
+        <br><br>
+        <label>Encrypted Text:</label>
+        <input type="text" id="enc-result" readonly>
+        <br>
+        <label>Key:</label>
+        <textarea id="enc-key" readonly></textarea>
+    </div>
+
+    <div class="section" id="decryption-section">
+        <h3>Decryption</h3>
+        <select id="dec-method">
+            <option value="AES">AES</option>
+            <option value="RSA">RSA</option>
+        </select>
+        <input type="text" id="dec-text" placeholder="Enter encrypted text">
+        <textarea id="dec-key" placeholder="Enter key"></textarea>
+        <button onclick="decryptText()">Decrypt</button>
+        <br><br>
+        <label>Original Text:</label>
+        <input type="text" id="dec-result" readonly>
+    </div>
+</div>
+
+<script>
+    function encryptText() {
+        const method = document.getElementById('enc-method').value;
+        const text = document.getElementById('plain-text').value;
+
+        fetch('http://127.0.0.1:5000/encrypt', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ method, text })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                document.getElementById('enc-result').value = data.encrypted;
+                document.getElementById('enc-key').value = data.key;
+            }
+        });
+    }
+
+    function decryptText() {
+        const method = document.getElementById('dec-method').value;
+        const text = document.getElementById('dec-text').value;
+        const key = document.getElementById('dec-key').value;
+
+        fetch('http://127.0.0.1:5000/decrypt', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ method, text, key })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                document.getElementById('dec-result').value = data.original;
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

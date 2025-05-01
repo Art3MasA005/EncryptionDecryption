@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Signup - Cyber Security Project</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #1e1e1e;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px #00ffe1;
+            width: 350px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            background-color: #333;
+            color: #fff;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #00ffe1;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #00d6c0;
+        }
+
+        #msg {
+            margin-top: 15px;
+            text-align: center;
+            color: #ff6b6b;
+        }
+
+        a {
+            color: #00ffe1;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Signup</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="signup()">Signup</button>
+        <p id="msg"></p>
+        <a href="login.html">Already have an account? Login</a>
+    </div>
+
+    <script>
+        function signup() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const msg = document.getElementById('msg');
+    
+            if (!username || !password) {
+                msg.textContent = "Please enter both username and password.";
+                return;
+            }
+    
+            fetch('http://127.0.0.1:5000/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log("Signup response:", data); // Debug
+                if (data.message) {
+                    msg.textContent = data.message;
+                    msg.style.color = '#00ff88';
+    
+                    // Ensure redirect after delay
+                    setTimeout(() => {
+                        window.location.href = "login.html";
+                    }, 1500);
+                } else {
+                    msg.textContent = data.error || "Unknown error.";
+                    msg.style.color = '#ff6b6b';
+                }
+            })
+            .catch(err => {
+                console.error("Fetch error:", err);
+                msg.textContent = "Server error. Check console.";
+                msg.style.color = '#ff6b6b';
+            });
+        }
+    </script>
+    
+    
+    
+</body>
+</html>
